@@ -1,8 +1,0 @@
-{
-  "name": "resumeready",
-  "version": "1.0.0",
-  "description": "AI resume builder for Canadian teens",
-  "engines": {
-"node": "24.x"
-  }
-}
