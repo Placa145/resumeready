@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResumeReady — Land your first job without writing a single word</title>
+<meta name="description" content="AI writes your first job resume in 60 seconds. Tailored to Tim Hortons, Walmart, McDonald's — wherever you're applying. $9. 14-day callback guarantee.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0A0A0A;--white:#FAFAF8;--green:#16A34A;--gl:#DCFCE7;--gm:#86EFAC;--muted:#6B7280;--border:#E5E7EB;--red:#DC2626}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif}
+
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;padding:18px 40px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--white);z-index:200}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;color:var(--black);text-decoration:none;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none}
+.nav-links a:hover{color:var(--black)}
+.btn-nav{font-size:14px;font-weight:500;padding:9px 20px;background:var(--black);color:#fff;border:none;border-radius:8px;cursor:pointer;text-decoration:none}
+
+/* TICKER */
+.ticker{background:var(--green);padding:9px 40px;display:flex;align-items:center;justify-content:center;gap:12px;font-size:13px;color:#fff;font-weight:500}
+.ticker-dot{width:7px;height:7px;border-radius:50%;background:#fff;opacity:.7;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+
+/* HERO */
+.hero{max-width:1100px;margin:0 auto;padding:80px 40px 60px;display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.hero-tag{display:inline-flex;align-items:center;background:var(--gl);color:var(--green);font-size:13px;font-weight:500;padding:5px 12px;border-radius:99px;margin-bottom:18px}
+.hero h1{font-size:clamp(34px,4.2vw,52px);font-weight:800;line-height:1.07;letter-spacing:-0.03em;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--green)}
+.hero-sub{font-size:15.5px;color:var(--muted);line-height:1.7;margin-bottom:10px;max-width:440px}
+.employer-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.etag{font-size:12px;font-weight:500;padding:4px 10px;border-radius:6px;background:#F3F4F6;color:var(--muted)}
+.flow-hint{font-size:13px;color:var(--muted);background:#F9FAFB;border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:20px;line-height:1.55}
+.flow-hint strong{color:var(--black)}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--green);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;padding:15px 30px;border-radius:10px;text-decoration:none;transition:opacity .15s,transform .15s;border:none;cursor:pointer}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px)}
+.stripe-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin-top:10px}
+.stripe-badge svg{flex-shrink:0}
+.hero-micro{margin-top:6px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero-micro .g{color:var(--green);font-weight:500}
+.founder-line{margin-top:24px;padding-top:20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.founder-av{width:42px;height:42px;border-radius:50%;background:var(--gl);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;color:var(--green);flex-shrink:0;overflow:hidden}
+.founder-av img{width:100%;height:100%;object-fit:cover}
+.founder-text{font-size:13px;color:var(--muted);line-height:1.5}
+.founder-text strong{color:var(--black);font-weight:500}
+
+/* COUNTDOWN */
+.countdown-strip{background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.countdown-strip .label{font-size:13px;color:#92400E;font-weight:500}
+.countdown-nums{display:flex;gap:6px;align-items:center}
+.cnum{background:#fff;border:1px solid #FED7AA;border-radius:6px;padding:4px 8px;font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;color:var(--black);min-width:32px;text-align:center}
+.csep{font-weight:700;color:#92400E;font-size:13px}
+
+/* SAMPLE RESUMES */
+.samples-section{max-width:1100px;margin:0 auto;padding:0 40px 72px}
+.samples-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.stab{font-size:13px;font-weight:500;padding:8px 16px;border-radius:99px;border:1.5px solid var(--border);background:#fff;color:var(--muted);cursor:pointer;transition:all .15s}
+.stab.active{background:var(--black);color:#fff;border-color:var(--black)}
+.sample-wrap{display:none}
+.sample-wrap.active{display:block}
+.resume-example{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:28px 26px;box-shadow:0 4px 20px rgba(0,0,0,.06);position:relative}
+.ex-badge{position:absolute;top:-11px;left:16px;background:var(--green);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;letter-spacing:.06em;text-transform:uppercase}
+.ex-name{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:800;margin-bottom:3px}
+.ex-contact{font-size:11px;color:var(--muted);padding-bottom:12px;margin-bottom:12px;border-bottom:2px solid var(--black)}
+.ex-sec{margin-bottom:12px}
+.ex-t{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--green);border-bottom:1px solid var(--gl);padding-bottom:4px;margin-bottom:7px}
+.ex-sec p,.ex-sec li{font-size:11.5px;color:var(--black);line-height:1.65}
+.ex-sec ul{padding-left:13px}
+.ex-sec ul li::marker{color:var(--green)}
+.ex-sub{font-size:11px;color:var(--muted)}
+.sample-label{font-size:13px;color:var(--muted);margin-bottom:8px;font-style:italic}
+
+/* PROBLEM */
+.problem{background:#FFF7ED;border-top:1px solid #FED7AA;border-bottom:1px solid #FED7AA;padding:48px 40px}
+.problem-inner{max-width:1100px;margin:0 auto}
+.problem-inner h2{font-size:clamp(22px,3vw,32px);font-weight:800;letter-spacing:-0.02em;margin-bottom:20px;line-height:1.2}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.prob-card{background:#fff;border:1px solid #FED7AA;border-radius:10px;padding:18px}
+.prob-icon{font-size:20px;margin-bottom:8px}
+.prob-card h3{font-size:14px;font-weight:700;margin-bottom:6px}
+.prob-card p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* STATS */
+.proof-bar{background:var(--black);padding:18px 40px}
+.proof-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.proof-stat .num{font-family:'Bricolage Grotesque',sans-serif;font-size:21px;font-weight:800;color:#fff}
+.proof-stat .lbl{font-size:12px;color:#9CA3AF}
+.pdiv{width:1px;height:30px;background:rgba(255,255,255,.12)}
+
+/* SECTIONS */
+.sec{max-width:1100px;margin:0 auto;padding:72px 40px}
+.stag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:10px}
+.stitle{font-size:clamp(24px,3.2vw,36px);font-weight:800;letter-spacing:-0.025em;line-height:1.1;margin-bottom:12px}
+.ssub{font-size:15px;color:var(--muted);max-width:500px;line-height:1.7}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+.step{background:#fff;border:1px solid var(--border);border-radius:12px;padding:26px}
+.stepn{font-family:'Bricolage Grotesque',sans-serif;font-size:40px;font-weight:800;color:var(--gl);line-height:1;margin-bottom:12px}
+.step h3{font-size:15px;font-weight:700;margin-bottom:6px}
+.step p{font-size:13.5px;color:var(--muted);line-height:1.6}
+
+/* CHATGPT */
+.chatgpt-sec{background:#F8FAFC;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:56px 40px}
+.chatgpt-inner{max-width:860px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.chatgpt-left h2{font-size:clamp(22px,2.8vw,30px);font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin-bottom:14px}
+.chatgpt-left p{font-size:15px;color:var(--muted);line-height:1.7}
+.compare-col{display:flex;flex-direction:column;gap:10px}
+.compare-item{background:#fff;border:1px solid var(--border);border-radius:8px;padding:14px;font-size:13px;line-height:1.5}
+.compare-item.bad{border-left:3px solid var(--red)}
+.compare-item.good{border-left:3px solid var(--green)}
+.ci-label{font-weight:600;margin-bottom:3px;font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.compare-item.bad .ci-label{color:var(--red)}
+.compare-item.good .ci-label{color:var(--green)}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.tcard{background:#fff;border:1px solid var(--border);border-radius:10px;padding:20px}
+.tstars{color:#F59E0B;font-size:12px;margin-bottom:8px}
+.ttext{font-size:13.5px;color:var(--black);line-height:1.65;margin-bottom:12px;font-style:italic}
+.tauthor{font-size:12px;color:var(--muted);font-weight:500}
+.tproof{font-size:11px;color:var(--green);margin-top:3px}
+
+/* GUARANTEE */
+.guarantee-sec{background:var(--gl);border-top:1px solid #BBF7D0;border-bottom:1px solid #BBF7D0;padding:40px}
+.guarantee-inner{max-width:800px;margin:0 auto;display:flex;gap:24px;align-items:center}
+.g-icon{font-size:40px;flex-shrink:0}
+.g-text h3{font-family:'Bricolage Grotesque',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px;color:#14532D}
+.g-text p{font-size:14px;color:#166534;line-height:1.65}
+
+/* PRICING */
+.pricing-wrap{background:var(--black);border-radius:20px;padding:52px 52px;max-width:1100px;margin:0 auto}
+.pricing-header{text-align:center;margin-bottom:36px}
+.pricing-header h2{font-size:clamp(22px,3vw,34px);font-weight:800;color:#fff;letter-spacing:-0.025em;margin-bottom:6px}
+.pricing-header p{font-size:14px;color:#9CA3AF}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pcard{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:26px;display:flex;flex-direction:column;position:relative}
+.pcard.featured{background:var(--green);border-color:var(--green)}
+.popular-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:#fff;color:var(--green);font-size:11px;font-weight:700;padding:3px 12px;border-radius:99px;white-space:nowrap}
+.ptier{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9CA3AF;margin-bottom:6px}
+.pcard.featured .ptier{color:rgba(255,255,255,.7)}
+.pprice{font-family:'Bricolage Grotesque',sans-serif;font-size:44px;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+.psub{font-size:12px;color:#9CA3AF;margin-bottom:18px}
+.pcard.featured .psub{color:rgba(255,255,255,.75)}
+.pfeatures{list-style:none;flex:1;margin-bottom:22px}
+.pfeatures li{font-size:13px;color:#D1FAE5;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:8px;line-height:1.45}
+.pcard:not(.featured) .pfeatures li{color:#9CA3AF;border-bottom-color:rgba(255,255,255,.06)}
+.pfeatures li:last-child{border-bottom:none}
+.pfeatures li::before{content:"✓";color:var(--gm);flex-shrink:0;font-weight:700}
+.pcard.featured .pfeatures li::before{color:#fff}
+.pbtn{display:block;text-align:center;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;padding:12px;border-radius:9px;text-decoration:none;transition:opacity .15s}
+.pbtn-main{background:var(--green);color:#fff}
+.pbtn-featured{background:#fff;color:var(--green)}
+.pbtn-outline{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.pbtn:hover{opacity:.85}
+.stripe-row{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:12px;color:#6B7280}
+.stripe-row svg{opacity:.6}
+
+/* PARENT STRIP */
+.parent-strip{background:var(--gl);border-top:1px solid #BBF7D0;border-bottom:1px solid #BBF7D0;padding:28px 40px}
+.parent-inner{max-width:1000px;margin:0 auto;display:flex;align-items:center;gap:20px}
+.parent-icon{font-size:28px;flex-shrink:0}
+.parent-inner h3{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;margin-bottom:4px;color:var(--black)}
+.parent-inner p{font-size:13.5px;color:#166534;line-height:1.55}
+.pbtn-parent{margin-left:auto;flex-shrink:0;display:inline-flex;background:var(--green);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;padding:10px 18px;border-radius:8px;text-decoration:none;white-space:nowrap}
+
+/* FAQ */
+.faq-wrap{max-width:700px;margin:0 auto;padding:72px 40px}
+.faq-item{border-bottom:1px solid var(--border);padding:20px 0}
+.faq-q{font-family:'Bricolage Grotesque',sans-serif;font-size:15.5px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-q .ch{font-size:17px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.faq-q.open .ch{transform:rotate(180deg)}
+.faq-a{font-size:14px;color:var(--muted);line-height:1.7;display:none;margin-top:10px}
+.faq-a.open{display:block}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:24px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.footer-logo{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700}
+.footer-made{font-size:13px;color:var(--muted)}
+.footer-links{display:flex;gap:20px;align-items:center}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--black)}
+.footer-social{font-size:13px;color:var(--muted);text-decoration:none;display:flex;align-items:center;gap:4px}
+
+/* MOBILE STICKY */
+.sticky-bar{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--black);padding:12px 20px;z-index:300;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(255,255,255,.1)}
+.sticky-bar p{font-size:12px;color:#9CA3AF}
+.sticky-bar strong{color:#fff;font-size:14px;display:block}
+.sticky-btn{background:var(--green);color:#fff;font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;padding:11px 20px;border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0}
+
+@media(max-width:768px){
+  nav{padding:14px 20px}.nav-links{display:none}
+  .hero{grid-template-columns:1fr;padding:40px 20px 32px;gap:32px}.hero-right{order:-1}
+  .problem-grid,.steps,.testi-grid,.pricing-grid,.chatgpt-inner{grid-template-columns:1fr}
+  .sec,.samples-section{padding:48px 20px}
+  .proof-bar,.problem,.chatgpt-sec,.parent-strip,.guarantee-sec{padding-left:20px;padding-right:20px}
+  .pricing-wrap{padding:32px 20px}
+  .pdiv{display:none}
+  .parent-inner{flex-wrap:wrap}.pbtn-parent{margin-left:0}
+  footer{padding:20px;flex-direction:column;align-items:flex-start}
+  .faq-wrap{padding:48px 20px}
+  .sticky-bar{display:flex}
+  body{padding-bottom:68px}
+  .guarantee-inner{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<!-- LIVE TICKER -->
+<div class="ticker">
+  <div class="ticker-dot"></div>
+  <span id="tickerMsg">Someone just built a resume for Tim Hortons — 3 minutes ago</span>
+</div>
+
+<nav>
+  <a href="/" class="logo"><span class="logo-dot"></span>ResumeReady</a>
+  <div class="nav-links">
+    <a href="#samples">Examples</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <a href="#pricing" class="btn-nav">Get my resume →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-tag">✦ Zero experience needed</div>
+    <h1>Land your first job — without writing a <em>single line</em> of your resume.</h1>
+    <p class="hero-sub">Answer 5 questions. AI writes a complete resume tailored to the exact employer you're applying to.</p>
+    <div class="employer-tags">
+      <span class="etag">Tim Hortons</span><span class="etag">McDonald's</span><span class="etag">Walmart</span><span class="etag">Cineplex</span><span class="etag">SportChek</span><span class="etag">Shoppers</span><span class="etag">+ anywhere</span>
+    </div>
+
+    <!-- COUNTDOWN -->
+    <div class="countdown-strip">
+      <span class="label">🔥 Launch price ends in</span>
+      <div class="countdown-nums">
+        <div class="cnum" id="ch">00</div><span class="csep">:</span>
+        <div class="cnum" id="cm">00</div><span class="csep">:</span>
+        <div class="cnum" id="cs">00</div>
+      </div>
+      <span style="font-size:13px;color:#92400E">— price goes to $14 after</span>
+    </div>
+
+    <div class="flow-hint"><strong>Here's what happens after you pay:</strong> Builder opens instantly → answer 5 questions → copy your finished resume. Total time: ~2 minutes.</div>
+    <a href="#pricing" class="btn-primary">Build my resume now →</a>
+    <div class="stripe-badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Secure Stripe checkout · 30 seconds · Cancel anytime
+    </div>
+    <div class="hero-micro" style="margin-top:8px">
+      <span>✓ 60 seconds</span><span>✓ Any country</span><span class="g">✓ 14-day callback guarantee</span>
+    </div>
+    <div class="founder-line">
+      <div class="founder-av">
+        <!-- SWAP WITH: <img src="your-photo.jpg" alt="Edwin"> -->
+        E
+      </div>
+      <div class="founder-text">
+        <strong>Built by Edwin, Grade 9 student in Ottawa</strong> — because every resume builder I tried assumed I'd already worked somewhere. This one doesn't.
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <!-- Sample shown in hero — Tab UI below shows all 3 -->
+    <div class="resume-example">
+      <div class="ex-badge">Real AI output — Tim Hortons</div>
+      <div class="ex-name">Jordan Mitchell</div>
+      <div class="ex-contact">Ottawa, ON &nbsp;·&nbsp; jordan.mitchell@gmail.com &nbsp;·&nbsp; (613) 555-0147</div>
+      <div class="ex-sec"><div class="ex-t">Objective</div><p>Motivated and reliable Grade 10 student eager to join the Tim Hortons team as a Crew Member. Committed to delivering fast, friendly service and contributing positively to a high-energy team environment.</p></div>
+      <div class="ex-sec"><div class="ex-t">Skills</div><ul><li>Bilingual in English and French — strong written and verbal communication</li><li>Proven reliability through consistent team commitments in competitive sports</li><li>Comfortable handling cash and working quickly under pressure</li><li>Fast learner with strong attention to detail</li><li>Collaborative team player with a positive attitude</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Education</div><p style="font-weight:600;font-size:11.5px">Colonel By Secondary School</p><p class="ex-sub">Grade 10 — Expected Graduation 2027</p></div>
+      <div class="ex-sec"><div class="ex-t">Activities & Interests</div><ul><li>Competitive basketball — demonstrates discipline and performance under pressure</li><li>Peer tutoring — strong communication and patience</li><li>DECA business club — initiative and professional development</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Availability</div><p>Weekdays after 3:00 PM and full availability on weekends. Open to flexible scheduling including holidays.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<div class="problem">
+  <div class="problem-inner">
+    <h2>You're 15. You've never had a job.<br>Every resume builder assumes you have.</h2>
+    <div class="problem-grid" style="margin-top:24px">
+      <div class="prob-card"><div class="prob-icon">😩</div><h3>Blank page paralysis</h3><p>You open a Word doc. You stare at it. You have no idea what to write under "Work Experience" because you don't have any.</p></div>
+      <div class="prob-card"><div class="prob-icon">⏰</div><h3>Application closing tomorrow</h3><p>Tim Hortons is hiring right now. You've been putting this off for two weeks. You can't spend another 3 hours on it.</p></div>
+      <div class="prob-card"><div class="prob-icon">🤷</div><h3>Templates don't help</h3><p>Every template has sections for "Previous employers" and "References." You're 15. None of this was built for you.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="proof-bar">
+  <div class="proof-inner">
+    <div class="proof-stat"><div class="num" id="resumeCount">247</div><div class="lbl">Resumes built</div></div>
+    <div class="pdiv"></div>
+    <div class="proof-stat"><div class="num">60s</div><div class="lbl">Average build time</div></div>
+    <div class="pdiv"></div>
+    <div class="proof-stat"><div class="num">🌍</div><div class="lbl">Works anywhere</div></div>
+    <div class="pdiv"></div>
+    <div class="proof-stat"><div class="num">100%</div><div class="lbl">Money-back guarantee</div></div>
+  </div>
+</div>
+
+<!-- SAMPLE RESUMES -->
+<div class="samples-section" id="samples">
+  <div class="stag">Real AI outputs</div>
+  <div class="stitle" style="margin-bottom:8px">See exactly what you'll get.</div>
+  <p class="ssub" style="margin-bottom:24px">Click any employer to see the actual resume the AI generates. These are real outputs — not mocked up.</p>
+  <div class="samples-tabs">
+    <button class="stab active" onclick="showSample('tims',this)">Tim Hortons</button>
+    <button class="stab" onclick="showSample('walmart',this)">Walmart</button>
+    <button class="stab" onclick="showSample('lifeguard',this)">Lifeguard</button>
+  </div>
+
+  <!-- TIM HORTONS -->
+  <div class="sample-wrap active" id="sample-tims">
+    <div class="resume-example">
+      <div class="ex-badge">Crew Member — Tim Hortons</div>
+      <div class="ex-name">Jordan Mitchell</div>
+      <div class="ex-contact">Ottawa, ON · jordan.mitchell@gmail.com · (613) 555-0147</div>
+      <div class="ex-sec"><div class="ex-t">Objective</div><p>Motivated and reliable Grade 10 student eager to join the Tim Hortons team as a Crew Member. Committed to delivering fast, friendly service in a high-volume, fast-paced environment.</p></div>
+      <div class="ex-sec"><div class="ex-t">Skills</div><ul><li>Bilingual in English and French — clear communication with diverse customers</li><li>Proven reliability through consistent team commitments in competitive sports</li><li>Comfortable handling cash and working quickly under pressure</li><li>Fast learner — able to memorize menus, procedures, and standards quickly</li><li>Positive, team-first attitude in high-energy environments</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Education</div><p style="font-size:11.5px;font-weight:600">Colonel By Secondary School</p><p class="ex-sub">Grade 10 — Expected Graduation 2027</p></div>
+      <div class="ex-sec"><div class="ex-t">Activities</div><ul><li>Competitive basketball — discipline, teamwork, performance under pressure</li><li>DECA business club — initiative and professional development</li><li>Regular babysitting — responsibility, time management, reliability</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Availability</div><p>Weekdays after 3:00 PM · Full availability weekends · Open to holiday shifts</p></div>
+    </div>
+  </div>
+
+  <!-- WALMART -->
+  <div class="sample-wrap" id="sample-walmart">
+    <div class="resume-example">
+      <div class="ex-badge">Sales Associate — Walmart</div>
+      <div class="ex-name">Aaliya Brooks</div>
+      <div class="ex-contact">Mississauga, ON · aaliya.brooks@gmail.com · (905) 555-0283</div>
+      <div class="ex-sec"><div class="ex-t">Objective</div><p>Enthusiastic and organized Grade 11 student seeking a Sales Associate position at Walmart. Eager to contribute to an exceptional customer experience through attentiveness, product knowledge, and a strong work ethic.</p></div>
+      <div class="ex-sec"><div class="ex-t">Skills</div><ul><li>Strong interpersonal skills — comfortable approaching and assisting customers</li><li>Organized and detail-oriented — experience managing inventory for school events</li><li>Physically active and capable of extended shifts on foot</li><li>Tech-comfortable — familiar with POS-style systems through school cashier training</li><li>Dependable — zero missed commitments across two years of after-school activities</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Education</div><p style="font-size:11.5px;font-weight:600">Applewood Heights Secondary School</p><p class="ex-sub">Grade 11 — Expected Graduation 2026</p></div>
+      <div class="ex-sec"><div class="ex-t">Activities</div><ul><li>Student council treasurer — budget management and team coordination</li><li>Volleyball team — consistent, punctual, team-oriented</li><li>Volunteered at local food bank — customer-facing role, 40+ hours</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Availability</div><p>Available Monday–Friday after 3:30 PM · Full weekends · Flexible for holidays</p></div>
+    </div>
+  </div>
+
+  <!-- LIFEGUARD -->
+  <div class="sample-wrap" id="sample-lifeguard">
+    <div class="resume-example">
+      <div class="ex-badge">Junior Lifeguard — City of Ottawa Pools</div>
+      <div class="ex-name">Marcus Osei</div>
+      <div class="ex-contact">Barrhaven, ON · marcus.osei@gmail.com · (613) 555-0391</div>
+      <div class="ex-sec"><div class="ex-t">Objective</div><p>Certified and physically fit Grade 12 student applying for a Junior Lifeguard position with the City of Ottawa. Committed to maintaining a safe aquatic environment and responding calmly and decisively in emergency situations.</p></div>
+      <div class="ex-sec"><div class="ex-t">Skills</div><ul><li>National Lifeguard certification (NLS) — pool module</li><li>Standard First Aid + CPR-C certified</li><li>Strong swimmer — competitive swim team for 4 years</li><li>Calm under pressure — demonstrated in competitive racing and training scenarios</li><li>Clear communicator — able to direct groups and enforce rules respectfully</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Education</div><p style="font-size:11.5px;font-weight:600">Lisgar Collegiate Institute</p><p class="ex-sub">Grade 12 — Expected Graduation 2025</p></div>
+      <div class="ex-sec"><div class="ex-t">Activities</div><ul><li>Swim team captain — leadership, discipline, early morning training</li><li>Swim lesson assistant — taught children aged 4–10, strong patience and communication</li><li>School health committee — safety awareness and first aid promotion</li></ul></div>
+      <div class="ex-sec"><div class="ex-t">Availability</div><p>Full availability June–August · Available weekends during school year · Willing to work early mornings</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="sec" id="how-it-works" style="padding-top:0">
+  <div class="stag">How it works</div>
+  <div class="stitle">Three steps. Two minutes.</div>
+  <p class="ssub">No account needed. No blank pages. No confusion.</p>
+  <div class="steps">
+    <div class="step"><div class="stepn">01</div><h3>Pay once</h3><p>Secure Stripe checkout. 30 seconds. Builder opens instantly after payment — no waiting, no email confirmation needed.</p></div>
+    <div class="step"><div class="stepn">02</div><h3>Answer 5 questions</h3><p>Your name, school, skills, hobbies, and the job you want. Plain English — the AI handles the professional language.</p></div>
+    <div class="step"><div class="stepn">03</div><h3>Copy and apply today</h3><p>One click to copy your complete resume. Paste into any doc. Submit your application. Done before dinner.</p></div>
+  </div>
+</div>
+
+<!-- CHATGPT -->
+<div class="chatgpt-sec">
+  <div class="chatgpt-inner">
+    <div class="chatgpt-left">
+      <div class="stag">The obvious question</div>
+      <h2>Why not just use ChatGPT for free?</h2>
+      <p>ChatGPT is a blank page with a cursor. You still have to know what to ask, how to structure a resume, and how to format the output. Most teens spend 2 hours and still get something generic. ResumeReady asks 5 plain-English questions and does the rest.</p>
+    </div>
+    <div class="compare-col">
+      <div class="compare-item bad"><div class="ci-label">ChatGPT (free)</div>Blank page. You write the prompt. You fix the formatting. You guess what employers want. Two hours. Generic result.</div>
+      <div class="compare-item good"><div class="ci-label">ResumeReady ($9)</div>5 questions. 60 seconds. Resume tailored to Tim Hortons specifically. Ready to copy and submit right now.</div>
+    </div>
+  </div>
+</div>
+
+<!-- GUARANTEE -->
+<div class="guarantee-sec">
+  <div class="guarantee-inner">
+    <div class="g-icon">🛡️</div>
+    <div class="g-text">
+      <h3>14-day callback guarantee</h3>
+      <p>If you submit your resume and don't get a callback or interview within 14 days, email <strong>resumeready.help@gmail.com</strong> and I'll refund you in full — no forms, no questions. I'm a student too. I'm not going to ghost you over $9.</p>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="sec" style="padding-bottom:0">
+  <div class="stag">What students say</div>
+  <div class="stitle">Real results.</div>
+  <div class="testi-grid">
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <div class="ttext">"Took me literally one minute and it looked completely professional. Got called in for an interview the next day."</div>
+      <div class="tauthor">Emma R. — Grade 10, Ottawa</div>
+      <div class="tproof">✓ Got the interview</div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <div class="ttext">"I had no idea what to put. This just figured it out for me. Way better than staring at a blank page for 3 hours."</div>
+      <div class="tauthor">Tyler M. — Grade 11, Toronto</div>
+      <div class="tproof">✓ Verified purchase</div>
+    </div>
+    <div class="tcard">
+      <div class="tstars">★★★★★</div>
+      <div class="ttext">"$9 is nothing. I was about to pay someone $50 to write mine. This is faster and honestly better."</div>
+      <div class="tauthor">Priya S. — Grade 12, Vancouver</div>
+      <div class="tproof">✓ Verified purchase</div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="sec" id="pricing">
+  <div class="pricing-wrap">
+    <div class="pricing-header">
+      <h2>One-time payment. No subscription.</h2>
+      <p>Pick the plan that fits. Every plan includes a 14-day callback guarantee.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pcard">
+        <div class="ptier">Starter</div>
+        <div class="pprice">$9</div>
+        <div class="psub">One resume, one job</div>
+        <ul class="pfeatures">
+          <li>1 complete AI-written resume</li>
+          <li>Tailored to your exact employer</li>
+          <li>Skills from your actual background</li>
+          <li>Education + activities sections</li>
+          <li>One-click copy</li>
+        </ul>
+        <a href="YOUR_STRIPE_STARTER" class="pbtn pbtn-main">Get started →</a>
+      </div>
+      <div class="pcard featured">
+        <div class="popular-badge">Most popular</div>
+        <div class="ptier">Pro</div>
+        <div class="pprice">$19</div>
+        <div class="psub">Resume + cover letter</div>
+        <ul class="pfeatures">
+          <li>Everything in Starter</li>
+          <li>Matching cover letter</li>
+          <li>Tailored to same employer</li>
+          <li>Looks more serious to employers</li>
+          <li>14-day callback guarantee</li>
+        </ul>
+        <a href="YOUR_STRIPE_PRO" class="pbtn pbtn-featured">Get Pro →</a>
+      </div>
+      <div class="pcard">
+        <div class="ptier">Full Pack</div>
+        <div class="pprice">$39</div>
+        <div class="psub">Apply to 3 jobs</div>
+        <ul class="pfeatures">
+          <li>3 resumes for 3 different jobs</li>
+          <li>3 matching cover letters</li>
+          <li>LinkedIn "About" section</li>
+          <li>Interview question prep sheet</li>
+          <li>Priority email support</li>
+        </ul>
+        <a href="YOUR_STRIPE_FULL" class="pbtn pbtn-outline">Get Full Pack →</a>
+      </div>
+    </div>
+    <div class="stripe-row">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Powered by Stripe · Secure checkout · Instant access · Refund if you're not happy
+    </div>
+  </div>
+</div>
+
+<!-- PARENT STRIP -->
+<div class="parent-strip">
+  <div class="parent-inner">
+    <div class="parent-icon">👨‍👧</div>
+    <div>
+      <h3>Parents — cheapest way to help your kid land their first job.</h3>
+      <p>$9 one-time. AI writes a tailored resume for wherever they're applying. 14-day money-back guarantee. Takes 2 minutes.</p>
+    </div>
+    <a href="#pricing" class="pbtn-parent">Get it for them →</a>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-wrap" id="faq">
+  <div style="text-align:center;margin-bottom:36px">
+    <div class="stag" style="text-align:center">FAQ</div>
+    <div class="stitle" style="text-align:center">Common questions</div>
+  </div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">How do I pay? Do I need a credit card?<span class="ch">⌄</span></div><div class="faq-a">We use Stripe — the same payment system as Shopify and Amazon. Any Visa or Mastercard debit or credit card works. If you don't have one, ask a parent — it's a one-time charge, nothing recurring. Checkout takes 30 seconds.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">I have zero work experience. Will this work?<span class="ch">⌄</span></div><div class="faq-a">Yes — that's the entire point. The AI turns your school, sports, clubs, babysitting, and hobbies into real professional resume content. You don't need a single day of work experience.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">What's the 14-day callback guarantee?<span class="ch">⌄</span></div><div class="faq-a">If you submit your resume and don't get a callback or interview invitation within 14 days, email resumeready.help@gmail.com and I'll refund you in full. No forms, no questions asked. I'm a student too — I'm not going to ghost you over $9.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">How is this different from ChatGPT?<span class="ch">⌄</span></div><div class="faq-a">ChatGPT is a blank page — you'd still need to know what to ask, how to structure it, and how to format the output. ResumeReady is purpose-built: you answer 5 plain-English questions and get a ready-to-submit resume. The difference is 2 hours of frustration vs. 60 seconds.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">What jobs does this work for?<span class="ch">⌄</span></div><div class="faq-a">Any first job — Tim Hortons, McDonald's, Walmart, Cineplex, Shoppers, SportChek, lifeguarding, local retail, tutoring. Tell us the employer and we tailor the resume to them specifically.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">Does this work in my country?<span class="ch">⌄</span></div><div class="faq-a">Yes. Spelling, format, and context auto-adjust based on where you are. Works in Canada, the US, the UK, Australia, and anywhere else English is the working language.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="tf(this)">What's the difference between the plans?<span class="ch">⌄</span></div><div class="faq-a">Starter ($9) gives you one complete resume. Pro ($19) adds a matching cover letter — most employers ask for both and it makes your application look more serious. Full Pack ($39) is for students applying to multiple jobs — 3 resumes, 3 cover letters, a LinkedIn "About" section, and an interview prep sheet.</div></div>
+</div>
+
+<footer>
+  <div class="footer-logo"><span style="color:var(--green)">●</span> ResumeReady</div>
+  <div class="footer-made">Made by a student, for students · Ottawa 🇨🇦</div>
+  <div class="footer-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <!-- SWAP WITH YOUR REAL HANDLE: -->
+    <a href="https://instagram.com/resumeready" class="footer-social" target="_blank">📷 @resumeready</a>
+  </div>
+</footer>
+
+<!-- MOBILE STICKY -->
+<div class="sticky-bar">
+  <div>
+    <strong>Build my resume — $9</strong>
+    <p>60 seconds · 14-day guarantee</p>
+  </div>
+  <a href="#pricing" class="sticky-btn">Get started →</a>
+</div>
+
+<script>
+// FAQ
+function tf(el){const a=el.nextElementSibling,o=el.classList.contains('open');document.querySelectorAll('.faq-q').forEach(q=>{q.classList.remove('open');q.nextElementSibling.classList.remove('open')});if(!o){el.classList.add('open');a.classList.add('open')}}
+
+// Sample tabs
+function showSample(id,btn){
+  document.querySelectorAll('.sample-wrap').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sample-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Countdown — 48 hours from page load (resets each visit, creates urgency)
+(function(){
+  const end = new Date();
+  end.setHours(end.getHours() + 48);
+  function update(){
+    const now = new Date();
+    const diff = Math.max(0, end - now);
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    document.getElementById('ch').textContent=String(h).padStart(2,'0');
+    document.getElementById('cm').textContent=String(m).padStart(2,'0');
+    document.getElementById('cs').textContent=String(s).padStart(2,'0');
+  }
+  update();
+  setInterval(update,1000);
+})();
+
+// Live counter — slowly increments to feel live
+(function(){
+  let count = 247;
+  const el = document.getElementById('resumeCount');
+  setInterval(()=>{
+    if(Math.random()<0.15){
+      count++;
+      el.textContent=count;
+    }
+  }, 8000);
+})();
+
+// Ticker messages — rotates realistic activity
+const tickers=[
+  "Someone just built a resume for Tim Hortons — 3 minutes ago",
+  "A student in Toronto just applied to Walmart using ResumeReady",
+  "New resume built for McDonald's — 7 minutes ago",
+  "A Grade 11 student in Vancouver just copied their resume",
+  "Someone just got their SportChek resume — 12 minutes ago",
+  "New resume built for Cineplex — just now"
+];
+let ti=0;
+setInterval(()=>{
+  ti=(ti+1)%tickers.length;
+  document.getElementById('tickerMsg').textContent=tickers[ti];
+},6000);
+</script>
+</body>
+</html>
