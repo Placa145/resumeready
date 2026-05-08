@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Build your resume — ResumeReady</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0A0A0A;--white:#FAFAF8;--green:#16A34A;--gl:#DCFCE7;--muted:#6B7280;--border:#E5E7EB}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);background:var(--white)}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;text-decoration:none;color:var(--black);display:flex;align-items:center;gap:7px}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+.plan-badge{font-size:12px;font-weight:500;padding:4px 10px;border-radius:99px;background:var(--gl);color:var(--green)}
+.wrap{max-width:640px;margin:0 auto;padding:44px 24px 80px}
+.pills{display:flex;gap:6px;margin-bottom:32px}
+.pill{height:4px;flex:1;background:var(--border);border-radius:99px;transition:background .3s}
+.pill.active{background:var(--green)}
+.pill.done{background:var(--green);opacity:.4}
+.step-label{font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:500;text-transform:uppercase;letter-spacing:.06em}
+.step-title{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:24px;line-height:1.15}
+.field{margin-bottom:16px}
+label{display:block;font-size:14px;font-weight:500;color:var(--black);margin-bottom:5px}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+input,select,textarea{width:100%;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;padding:11px 13px;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--black);outline:none;transition:border-color .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--green)}
+textarea{resize:vertical;min-height:84px;line-height:1.55}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn-group{display:flex;gap:8px;justify-content:flex-end;margin-top:24px}
+.btn-back{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:500;padding:11px 20px;border:1.5px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);cursor:pointer;transition:all .15s}
+.btn-back:hover{border-color:var(--black);color:var(--black)}
+.btn-next{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;padding:11px 26px;border-radius:8px;background:var(--black);color:#fff;border:none;cursor:pointer;transition:opacity .15s}
+.btn-next:hover{opacity:.8}
+.btn-generate{background:var(--green)}
+.loading{text-align:center;padding:56px 20px;display:none}
+.spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading h3{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-weight:700;margin-bottom:6px}
+.loading p{font-size:13px;color:var(--muted)}
+.output{display:none}
+.out-tabs{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.out-tab{flex:1;padding:10px;text-align:center;font-size:13px;font-weight:500;cursor:pointer;background:#fff;color:var(--muted);border:none;transition:all .15s}
+.out-tab.active{background:var(--black);color:#fff}
+.doc{background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:36px 40px;margin-bottom:16px;display:none}
+.doc.active{display:block}
+.r-name{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;letter-spacing:-0.02em;margin-bottom:5px}
+.r-contact{font-size:12.5px;color:var(--muted);margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--black)}
+.r-sec{margin-bottom:18px}
+.r-sec-title{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--gl)}
+.r-sec p{font-size:13px;color:var(--black);line-height:1.65}
+.r-sec ul{padding-left:15px;font-size:13px;color:var(--black);line-height:1.85}
+.r-sec ul li::marker{color:var(--green)}
+.r-sec .esub{font-size:12.5px;color:var(--muted)}
+.action-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn-copy{font-family:'Bricolage Grotesque',sans-serif;font-size:14px;font-weight:700;padding:11px 22px;background:var(--green);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:opacity .15s}
+.btn-copy:hover{opacity:.85}
+.btn-restart{font-size:13px;padding:11px 18px;background:transparent;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;color:var(--muted);transition:all .15s}
+.btn-restart:hover{color:var(--black);border-color:var(--black)}
+.ok{font-size:12px;color:var(--green);font-weight:500;display:none}
+.err{font-size:13px;color:#DC2626;margin-top:8px;display:none}
+@media(max-width:520px){nav{padding:12px 16px}.wrap{padding:28px 16px 60px}.row2{grid-template-columns:1fr}.doc{padding:22px 18px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo"><span class="logo-dot"></span>ResumeReady</a>
+  <span class="plan-badge" id="planBadge">Starter</span>
+</nav>
+
+<div class="wrap">
+  <div class="pills" id="pillBar">
+    <div class="pill active" id="p1"></div>
+    <div class="pill" id="p2"></div>
+    <div class="pill" id="p3"></div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div id="step1">
+    <div class="step-label">Step 1 of 3</div>
+    <div class="step-title">About you</div>
+    <div class="row2">
+      <div class="field"><label for="fname">Full name</label><input type="text" id="fname" placeholder="Jordan Smith"/></div>
+      <div class="field"><label for="city">City</label><input type="text" id="city" placeholder="Ottawa, ON"/></div>
+    </div>
+    <div class="field"><label for="email">Email address</label><input type="email" id="email" placeholder="jordan@gmail.com"/></div>
+    <div class="row2">
+      <div class="field"><label for="school">School name</label><input type="text" id="school" placeholder="Colonel By Secondary"/></div>
+      <div class="field"><label for="grade">Grade</label><select id="grade"><option value="">Select</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option><option>Year 1 (University)</option><option>Year 2 (University)</option></select></div>
+    </div>
+    <div class="btn-group"><button class="btn-next" onclick="toStep(2)">Next →</button></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div id="step2" style="display:none">
+    <div class="step-label">Step 2 of 3</div>
+    <div class="step-title">The job</div>
+    <div class="field">
+      <label for="job">Job title and company</label>
+      <input type="text" id="job" placeholder="Crew Member at Tim Hortons"/>
+      <p class="hint">Be specific — e.g. "Cashier at Walmart" or "Sales Associate at SportChek"</p>
+    </div>
+    <div class="field"><label for="avail">Your availability</label><input type="text" id="avail" placeholder="Weekdays after 3pm, full availability weekends"/></div>
+    <div class="field"><label for="why">Why do you want this job? <span style="color:var(--muted);font-weight:400">(optional)</span></label><textarea id="why" placeholder="I want to build customer service skills and earn some income..."></textarea></div>
+    <div class="btn-group">
+      <button class="btn-back" onclick="toStep(1)">← Back</button>
+      <button class="btn-next" onclick="toStep(3)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div id="step3" style="display:none">
+    <div class="step-label">Step 3 of 3</div>
+    <div class="step-title">Your strengths</div>
+    <div class="field">
+      <label for="skills">Skills and strengths</label>
+      <textarea id="skills" placeholder="Good with people, bilingual English/French, reliable, fast learner, comfortable with cash..."></textarea>
+      <p class="hint">Write naturally — AI turns this into professional bullet points</p>
+    </div>
+    <div class="field">
+      <label for="hobbies">Activities and hobbies</label>
+      <textarea id="hobbies" placeholder="Basketball, babysitting, DECA club, volunteered at food bank..."></textarea>
+      <p class="hint">Sports, clubs, babysitting, helping family — everything counts</p>
+    </div>
+    <div id="errMsg" class="err"></div>
+    <div class="btn-group">
+      <button class="btn-back" onclick="toStep(2)">← Back</button>
+      <button class="btn-next btn-generate" id="genBtn" onclick="generate()">✦ Build my resume</button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loadArea">
+    <div class="spinner"></div>
+    <h3 id="loadMsg">Writing your resume...</h3>
+    <p>This takes about 15 seconds</p>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output" id="outputArea">
+    <div class="out-tabs" id="tabBar" style="display:none">
+      <button class="out-tab active" onclick="switchTab('resume',this)">Resume</button>
+      <button class="out-tab" onclick="switchTab('cover',this)">Cover Letter</button>
+    </div>
+
+    <div class="doc active" id="resumeDoc">
+      <div class="r-name" id="rName"></div>
+      <div class="r-contact" id="rContact"></div>
+      <div class="r-sec"><div class="r-sec-title">Objective</div><p id="rObj"></p></div>
+      <div class="r-sec"><div class="r-sec-title">Skills</div><ul id="rSkills"></ul></div>
+      <div class="r-sec"><div class="r-sec-title">Education</div><div id="rEduSchool" style="font-size:13px;font-weight:600"></div><div id="rEduGrade" class="esub"></div><ul id="rEduHL" style="margin-top:5px"></ul></div>
+      <div class="r-sec"><div class="r-sec-title">Activities & Interests</div><ul id="rActs"></ul></div>
+      <div class="r-sec"><div class="r-sec-title">Availability</div><p id="rAvail"></p></div>
+    </div>
+
+    <div class="doc" id="coverDoc">
+      <div style="white-space:pre-line;font-size:13px;line-height:1.8;color:var(--black)" id="coverText"></div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn-copy" onclick="copyActive()">⎘ Copy</button>
+      <button class="btn-restart" onclick="restart()">↺ Start over</button>
+      <span class="ok" id="okMsg">✓ Copied!</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Detect plan from URL param
+const params = new URLSearchParams(window.location.search);
+const plan = params.get('plan') || 'starter'; // starter | pro | full
+const isPro = plan === 'pro' || plan === 'full';
+const isFull = plan === 'full';
+
+// Update badge
+const badges = {starter:'Starter — 1 Resume', pro:'Pro — Resume + Cover Letter', full:'Full Pack — 3 Jobs'};
+document.getElementById('planBadge').textContent = badges[plan] || 'Starter';
+
+const msgs = ["Writing your resume...","Tailoring it to the job...","Adding the finishing touches..."];
+let msgIdx = 0, msgTimer;
+
+function v(id){return document.getElementById(id).value.trim()}
+function show(id,vis){document.getElementById(id).style.display=vis?'block':'none'}
+
+function setPills(n){
+  for(let i=1;i<=3;i++){
+    const p=document.getElementById('p'+i);
+    p.className='pill'+(i<n?' done':i===n?' active':'');
+  }
+}
+
+function toStep(n){
+  if(n===2&&(!v('fname')||!v('city')||!v('school')||!v('grade'))){alert('Please fill in all fields.');return}
+  if(n===3&&(!v('job')||!v('avail'))){alert('Please enter the job and your availability.');return}
+  for(let i=1;i<=3;i++)show('step'+i,false);
+  show('step'+n,true);
+  setPills(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function switchTab(which, btn){
+  document.querySelectorAll('.out-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('resumeDoc').classList.toggle('active', which==='resume');
+  document.getElementById('coverDoc').classList.toggle('active', which==='cover');
+}
+
+async function callAI(prompt){
+  const res = await fetch('/api/generate',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({prompt})
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+async function generate(){
+  const err=document.getElementById('errMsg');
+  err.style.display='none';
+  if(!v('skills')){err.textContent='Please add at least one skill or strength.';err.style.display='block';return}
+  show('step3',false);
+  show('loadArea',true);
+  document.getElementById('loadMsg').textContent=msgs[0];
+  msgTimer=setInterval(()=>{msgIdx=(msgIdx+1)%msgs.length;document.getElementById('loadMsg').textContent=msgs[msgIdx]},3000);
+
+  const base=`
+Student info:
+- Name: ${v('fname')}
+- City: ${v('city')}
+- Email: ${v('email')||'not provided'}
+- School: ${v('school')}, ${v('grade')}
+- Job applying for: ${v('job')}
+- Why they want it: ${v('why')||'not specified'}
+- Availability: ${v('avail')}
+- Skills/strengths: ${v('skills')}
+- Hobbies/activities: ${v('hobbies')||'not specified'}`;
+
+  const resumePrompt=`Create a first-job resume for a student. Return ONLY valid JSON, no markdown, no backticks.
+${base}
+Detect country from city and use correct spelling conventions.
+Return this exact JSON:
+{"name":"full name","contact":"City | email | phone placeholder","objective":"2 strong sentences naming the specific company","skills":["5-7 professional skill bullets from their background"],"education":{"school":"school name","grade":"Grade X — Expected Graduation 20XX","highlights":["1-2 academic notes"]},"activities":["3-5 activities reframed as professional strengths"],"availability":"professional availability statement"}
+Rules: No fake work experience. Objective must name the specific company. Skills must be specific to this person.`;
+
+  try{
+    const raw=await callAI(resumePrompt);
+    const clean=raw.replace(/```json|```/g,'').trim();
+    const r=JSON.parse(clean);
+    clearInterval(msgTimer);
+    renderResume(r);
+
+    if(isPro){
+      show('loadArea',true);
+      document.getElementById('loadMsg').textContent='Writing your cover letter...';
+      const coverPrompt=`Write a professional cover letter for a student applying for their first job.
+${base}
+Write in a warm, confident but not over-the-top tone. Include: date, employer address placeholder, proper greeting, 3 body paragraphs (why this job, what they bring, closing), sign-off.
+Return ONLY the cover letter text, no JSON, no extra commentary.`;
+      const cover=await callAI(coverPrompt);
+      document.getElementById('coverText').textContent=cover;
+      document.getElementById('tabBar').style.display='flex';
+      clearInterval(msgTimer);
+      show('loadArea',false);
+    }
+
+    show('outputArea',true);
+    document.getElementById('outputArea').scrollIntoView({behavior:'smooth'});
+  }catch(e){
+    clearInterval(msgTimer);
+    show('loadArea',false);
+    show('step3',true);
+    err.textContent='Something went wrong. Please try again.';
+    err.style.display='block';
+  }
+}
+
+function renderResume(r){
+  document.getElementById('rName').textContent=r.name;
+  document.getElementById('rContact').textContent=r.contact;
+  document.getElementById('rObj').textContent=r.objective;
+  const sl=document.getElementById('rSkills');sl.innerHTML='';
+  (r.skills||[]).forEach(s=>{const li=document.createElement('li');li.textContent=s;sl.appendChild(li)});
+  document.getElementById('rEduSchool').textContent=r.education?.school||'';
+  document.getElementById('rEduGrade').textContent=r.education?.grade||'';
+  const hl=document.getElementById('rEduHL');hl.innerHTML='';
+  (r.education?.highlights||[]).forEach(h=>{const li=document.createElement('li');li.textContent=h;hl.appendChild(li)});
+  const al=document.getElementById('rActs');al.innerHTML='';
+  (r.activities||[]).forEach(a=>{const li=document.createElement('li');li.textContent=a;al.appendChild(li)});
+  document.getElementById('rAvail').textContent=r.availability;
+  if(!isPro)show('outputArea',true);
+}
+
+function copyActive(){
+  const active=document.querySelector('.doc.active');
+  navigator.clipboard.writeText(active.innerText).then(()=>{
+    const ok=document.getElementById('okMsg');
+    ok.style.display='inline';
+    setTimeout(()=>ok.style.display='none',2000);
+  });
+}
+
+function restart(){
+  ['fname','city','email','school','job','avail','why','skills','hobbies'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('grade').value='';
+  show('outputArea',false);
+  document.getElementById('tabBar').style.display='none';
+  toStep(1);
+}
+</script>
+</body>
+</html>
