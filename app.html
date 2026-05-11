@@ -521,7 +521,9 @@ function renderResume(r){
 }
 
 function copyResume(){
-  const text=document.getElementById('resumeDoc').innerText;
+  const activeDoc=document.querySelector('.doc.active');
+  if(!activeDoc) return;
+  const text=activeDoc.innerText;
   navigator.clipboard.writeText(text).then(()=>{
     const ok=document.getElementById('okMsg');
     ok.style.display='inline';
