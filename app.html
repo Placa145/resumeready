@@ -201,7 +201,7 @@ textarea{resize:vertical;min-height:84px;line-height:1.55}
     </div>
     <div class="field">
       <label for="hobbies">Activities, clubs, and hobbies <span style="color:var(--muted);font-weight:400">(optional but helps a lot)</span></label>
-      <textarea id="hobbies" placeholder="Volleyball (school team, 2 years), babysitting my neighbour's kids every Friday, student council, soccer league on weekends..." maxlength="600"></textarea>
+      <textarea id="hobbies" placeholder="Volleyball (school team, 2 years), babysitting my neighbour's kids every Friday, student council, soccer league every Saturday..." maxlength="600"></textarea>
       <p class="hint">Keep skills and activities separate — the AI will put each thing in the right section.</p>
     </div>
     <div class="gen-err" id="genErr"></div>
@@ -341,6 +341,8 @@ function switchTab(which,btn){
   btn.classList.add('active');
   document.getElementById('resumeDoc').classList.toggle('active',which==='resume');
   document.getElementById('coverDoc').classList.toggle('active',which==='cover');
+  const copyBtn=document.querySelector('.btn-copy');
+  if(copyBtn) copyBtn.textContent = which==='cover' ? '⎘ Copy cover letter' : '⎘ Copy resume';
 }
 
 async function callAI(prompt){
@@ -383,7 +385,7 @@ RULE 1 — PHONE: Include phone ONLY if provided above. If blank, omit it from c
 
 RULE 2 — VERBATIM SKILLS: Each skill bullet must use ONLY the student's exact words. Do NOT add, expand, or elaborate. "Responsible" → output "Responsible" — NEVER "Responsible and reliable". "Fast learner" → output "Fast learner" — NEVER "Fast learner who adapts quickly". "Good with people" → output "Good with people" — NEVER "Good with people and customer interactions". Adding even one word not in the student's input is a critical violation.
 
-RULE 2B — NO FIRST-PERSON TO THIRD-PERSON CONVERSION: If the student wrote in first person ("I help my mom run her small business so I know how to handle money"), do NOT convert to a third-person professional bullet like "Experience handling money from helping mom's business." Instead, keep the personal structure: "Helps run mom's small business, including handling money." The word "Experience" must NEVER be used to start a bullet unless the student wrote that word. Keep first-person context intact. If student wrote "I help my mom run her small business so I know how to handle money" — output ONE bullet: "Helps run mom's small business and handles money" — NEVER split into two separate bullets.
+RULE 2B — ONE SENTENCE = ONE BULLET: Never split a single input sentence into multiple bullets. Never merge multiple bullets into one. If the student wrote "I help my mom run her small business so I know how to handle money" — this is ONE bullet. Output it as ONE bullet only: "Helps run mom's small business and knows how to handle money". The word count and connector words in the output must not exceed the original sentence by more than 2 words.
 
 RULE 3 — VERBATIM AVAILABILITY: Copy the student's availability with only capitalization changes. "Saturday and Sunday" must remain "Saturday and Sunday" — NEVER "weekends". Never generalize, summarize, or vague-ify specific days or times.
 
@@ -397,7 +399,7 @@ RULE 7 — NO INVENTION: Do not add skills, credentials, or claims the student d
 
 RULE 8 — NO ACADEMIC INVENTION: Do not add "maintaining strong academic standing", GPA, honour roll, awards, or any academic claim the student did not mention.
 
-RULE 9 — OBJECTIVE ONLY USES STUDENT'S OWN WORDS: Only use adjectives and descriptors from the student's "why" input. Never add "professional", "organized", "dynamic", or any word the student did not write. The first sentence of the objective must start with "Seeking a [job title] position at [company]." Do NOT add invented phrases like "contribute to daily operations" or any phrase not from the student's why input.
+RULE 9 — OBJECTIVE: Write exactly two sentences. Sentence 1 must be exactly: "Seeking a [job title] position at [company]." — use the student's exact job title and company name, nothing else. Sentence 2 must use only words from the student's "why" field, verbatim. Do NOT add any clause, phrase, or word not written by the student. Never append reasoning, context, or filler like "making it a convenient location" or "where I can contribute".
 
 RULE 10 — SKILLS from SKILLS INPUT only. ACTIVITIES from ACTIVITIES INPUT only. Never cross-contaminate.
 
@@ -431,7 +433,7 @@ Return this exact JSON structure:
     document.getElementById('loadMsg').textContent='Analyzing your strengths...';
     renderResume(r);
     document.getElementById('outputArea').style.display='block';
-    document.getElementById('noExpNote').style.display = !v('why') ? 'block' : 'none';
+    document.getElementById('noExpNote').style.display = (!v('why') && v('hobbies')) ? 'block' : 'none';
     document.getElementById('outputArea').scrollIntoView({behavior:'smooth'});
     if(isPro){
       generateCoverLetter();
@@ -555,7 +557,8 @@ ${langs?`<div class="section"><div class="section-title">Languages</div><ul>${la
 }
 
 function confirmRestart(){
-  if(confirm('Start over? Your resume will be cleared.')) restart();
+  if(!window.confirm('Are you sure? This will clear all your answers.')) return;
+  restart();
 }
 function restart(){
   ['fname','city','email','phone','school','job','avail','why','skills','hobbies','languages'].forEach(id=>{
