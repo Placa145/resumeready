@@ -118,7 +118,7 @@ textarea{resize:vertical;min-height:84px;line-height:1.55}
     </div>
     <div class="row2">
       <div class="field">
-        <label for="email">Email address</label>
+        <label for="email">Email address <span style="color:var(--muted);font-weight:400">(optional)</span></label>
         <input type="email" id="email" placeholder="jordan@gmail.com" maxlength="120" oninput="clearErr('email')"/>
         <div class="field-err" id="err-email">Please enter a valid email address</div>
       </div>
@@ -176,7 +176,7 @@ textarea{resize:vertical;min-height:84px;line-height:1.55}
     </div>
     <div class="field">
       <label for="avail">Your availability<span class="req">*</span></label>
-      <input type="text" id="avail" placeholder="Weekdays after 3pm, full availability weekends" maxlength="200" oninput="clearErr('avail')"/>
+      <input type="text" id="avail" placeholder="After school weekdays, all day Saturday and Sunday" maxlength="200" oninput="clearErr('avail')"/>
       <div class="field-err" id="err-avail">Please enter your availability</div>
     </div>
     <div class="field">
@@ -383,11 +383,11 @@ RULE 1 — PHONE: Include phone ONLY if provided above. If blank, omit it from c
 
 RULE 2 — VERBATIM SKILLS: Each skill bullet must use ONLY the student's exact words. Do NOT add, expand, or elaborate. "Responsible" → output "Responsible" — NEVER "Responsible and reliable". "Fast learner" → output "Fast learner" — NEVER "Fast learner who adapts quickly". "Good with people" → output "Good with people" — NEVER "Good with people and customer interactions". Adding even one word not in the student's input is a critical violation.
 
-RULE 2B — NO FIRST-PERSON TO THIRD-PERSON CONVERSION: If the student wrote in first person ("I help my mom run her small business so I know how to handle money"), do NOT convert to a third-person professional bullet like "Experience handling money from helping mom's business." Instead, keep the personal structure: "Helps run mom's small business, including handling money." The word "Experience" must NEVER be used to start a bullet unless the student wrote that word. Keep first-person context intact.
+RULE 2B — NO FIRST-PERSON TO THIRD-PERSON CONVERSION: If the student wrote in first person ("I help my mom run her small business so I know how to handle money"), do NOT convert to a third-person professional bullet like "Experience handling money from helping mom's business." Instead, keep the personal structure: "Helps run mom's small business, including handling money." The word "Experience" must NEVER be used to start a bullet unless the student wrote that word. Keep first-person context intact. If student wrote "I help my mom run her small business so I know how to handle money" — output ONE bullet: "Helps run mom's small business and handles money" — NEVER split into two separate bullets.
 
 RULE 3 — VERBATIM AVAILABILITY: Copy the student's availability with only capitalization changes. "Saturday and Sunday" must remain "Saturday and Sunday" — NEVER "weekends". Never generalize, summarize, or vague-ify specific days or times.
 
-RULE 4 — PRESERVE PERSONAL REFERENCES: Never change "mom's" to "family". "mom's small business" stays "mom's small business". "my neighbour's kids" stays "my neighbour's kids". Use the student's exact phrasing for people, places, and relationships.
+RULE 4 — PRESERVE PERSONAL REFERENCES: Never change "mom's" to "family". "mom's small business" stays "mom's small business". "my neighbour's kids" stays "my neighbour's kids". Use the student's exact phrasing for people, places, and relationships. Preserve possessive pronouns. "my neighbour's kids" stays "my neighbour's kids" — never drop "my".
 
 RULE 5 — PRESERVE SPECIFICS: "every Friday" stays "every Friday". "2 years" stays "2 years". "school team" stays "school team". Never generalize or rephrase specific details.
 
@@ -397,7 +397,7 @@ RULE 7 — NO INVENTION: Do not add skills, credentials, or claims the student d
 
 RULE 8 — NO ACADEMIC INVENTION: Do not add "maintaining strong academic standing", GPA, honour roll, awards, or any academic claim the student did not mention.
 
-RULE 9 — OBJECTIVE ONLY USES STUDENT'S OWN WORDS: Only use adjectives and descriptors from the student's "why" input. Never add "professional", "organized", "dynamic", or any word the student did not write.
+RULE 9 — OBJECTIVE ONLY USES STUDENT'S OWN WORDS: Only use adjectives and descriptors from the student's "why" input. Never add "professional", "organized", "dynamic", or any word the student did not write. The first sentence of the objective must start with "Seeking a [job title] position at [company]." Do NOT add invented phrases like "contribute to daily operations" or any phrase not from the student's why input.
 
 RULE 10 — SKILLS from SKILLS INPUT only. ACTIVITIES from ACTIVITIES INPUT only. Never cross-contaminate.
 
@@ -428,9 +428,10 @@ Return this exact JSON structure:
     success=true;
     clearInterval(loadTimer);
     document.getElementById('loadArea').style.display='none';
+    document.getElementById('loadMsg').textContent='Analyzing your strengths...';
     renderResume(r);
     document.getElementById('outputArea').style.display='block';
-    document.getElementById('noExpNote').style.display='block';
+    document.getElementById('noExpNote').style.display = !v('why') ? 'block' : 'none';
     document.getElementById('outputArea').scrollIntoView({behavior:'smooth'});
     if(isPro){
       generateCoverLetter();
@@ -464,6 +465,7 @@ Return this exact JSON structure:
   }catch(e){
     clearInterval(loadTimer);
     document.getElementById('loadArea').style.display='none';
+    document.getElementById('loadMsg').textContent='Analyzing your strengths...';
     if(!success){
       document.getElementById('step3').style.display='block';
       genErr.textContent='Something went wrong. Please try again.';
