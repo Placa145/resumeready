@@ -21,27 +21,35 @@ resumeready/
 - Hosting: Vercel (free tier) — auto-deploys on every push to main
 - Backend: api/generate.js — serverless, keeps ANTHROPIC_API_KEY secure
 - Frontend: vanilla HTML/CSS/JS — no framework, intentional
-- AI: claude-sonnet-4-5-20251022, temperature: 0, max_tokens: 1000
+- AI: claude-sonnet-4-6, temperature: 0, max_tokens: 1000
 - Payments: Stripe (live, real money)
 
 ## API configuration (generate.js)
-- Model: claude-sonnet-4-5-20251022
+- Model: claude-sonnet-4-6
 - max_tokens: 1000
 - temperature: 0
-- Prompt caching: enabled (anthropic-beta: prompt-caching-2024-07-31)
-- cache_control: ephemeral on both system prompts
-- Request timeout: 25 seconds (AbortController)
+- Prompt caching: enabled via cache_control (no beta header needed — caching is GA)
+- Request timeout: 8000ms (AbortController — fires before Vercel free tier 10s hard limit)
 - Input validation: type check, empty check, 4000 char max, allowlist on type param
-- Error cases handled: overloaded_error, rate_limit_error, invalid_api_key, AbortError
+- Error cases handled: overloaded_error, rate_limit_error, invalid_api_key, AbortError, 403 paywall
+
+## Payment gate (generate.js + app.html)
+- Every /api/generate request requires a valid Stripe session ID
+- Session ID comes from URL param: /app?session={CHECKOUT_SESSION_ID}
+- generate.js calls Stripe API to verify session.payment_status === 'paid'
+- Invalid/missing session → 403 response → app.html redirects to homepage
+- app.html shows paywall screen if no session param in URL
+- Required env var: STRIPE_SECRET_KEY (set in Vercel → Settings → Environment Variables)
 
 ## Stripe links
-- Starter $9: https://buy.stripe.com/dRmaEXc0YeHEcfT16u9Ve04 → /app
-- Pro $19: https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02 → /app?plan=pro
+- Starter $9: https://buy.stripe.com/dRmaEXc0YeHEcfT16u9Ve04 → /app?session={CHECKOUT_SESSION_ID}
+- Pro $19: https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02 → /app?plan=pro&session={CHECKOUT_SESSION_ID}
+- IMPORTANT: {CHECKOUT_SESSION_ID} is a Stripe variable — type it exactly like that in the success URL
 
 ## Support email
 hello@myresumeready.ca
 
-## Current version: v16
+## Current version: v17
 
 ## Core product rules (NON-NEGOTIABLE)
 1. Believability > impressiveness — resumes must sound like a real student wrote them
@@ -99,6 +107,8 @@ Used before injecting any student data into innerHTML (cover letter preview, PDF
 - Full Pack $39 → removed entirely (features were not built)
 - Privacy/Terms 404 → vercel.json rewrites + actual pages added
 - Cover letter XSS risk → escapeHtml() on all student data injected into innerHTML
+- Vercel maxDuration error → removed functions block (free tier doesn't support it)
+- /app accessible without payment → Stripe session gate added
 
 ## QA persona — Maya Chen
 Use this to test after any change:
@@ -113,16 +123,19 @@ Use this to test after any change:
 
 ## Deployment
 Push to main → Vercel auto-deploys. Check Vercel dashboard for errors.
-Environment variable: ANTHROPIC_API_KEY (set in Vercel → Settings → Environment Variables)
+Environment variables (Vercel → Settings → Environment Variables):
+- ANTHROPIC_API_KEY
+- STRIPE_SECRET_KEY (sk_live_...)
 
 ## Analytics
-Plausible script is included in index.html and app.html. Edwin needs to create an account at plausible.io and add the domain to activate tracking. Data-domain is currently set to myresumeready.ca — update to custom domain once purchased.
+Plausible script is included in index.html and app.html. Create account at plausible.io and add myresumeready.ca to activate.
 
 ## What's next (priority order)
-1. Set up Plausible account at plausible.io — script is live, just needs account activation
-2. Get 3 real testimonials from classmates — give free access, ask for one honest sentence
-3. Buy resumeready.co on Namecheap ($12) — every audit flagged the vercel.app domain
-4. Set up custom email (hello@resumeready.co) via Cloudflare email routing — free
-5. Update Plausible data-domain once custom domain is live
-6. Submit to AI directories (free traffic): theresanaiforthat.com, futurepedia.io, toolify.ai
-7. DM 30 classmates: "yo are you trying to get a job? i built something that writes your resume in 60 sec — $9, refund if it sucks"
+1. Add STRIPE_SECRET_KEY to Vercel env vars
+2. Update both Stripe payment link success URLs to include {CHECKOUT_SESSION_ID}
+3. Set up Plausible account at plausible.io — script is live, just needs account activation
+4. Get 3 real testimonials from classmates — give free access, ask for one honest sentence
+5. Buy resumeready.co on Namecheap ($12)
+6. Set up custom email (hello@resumeready.co) via Cloudflare email routing — free
+7. Submit to AI directories: theresanaiforthat.com, futurepedia.io, toolify.ai
+8. DM 30 classmates: "yo are you trying to get a job? i built something that writes your resume in 60 sec — $9, refund if it sucks"
