@@ -57,7 +57,7 @@ RULES:
 - Keep it to 3 short paragraphs — opening, why this job + what they bring, closing
 - Never invent qualifications, achievements, or experience the student didn't provide
 - Tone: genuine, direct, slightly informal — like a smart teenager, not a LinkedIn influencer
-- Avoid exaggerated enthusiasm or fake corporate excitement. The student should sound sincere, calm, and realistic — not like they're performing eagerness. Phrases like "I would love the opportunity" or "I am so excited to apply" are forbidden.
+- Avoid exaggerated enthusiasm or fake corporate excitement. Phrases like "I would love the opportunity" or "I am so excited to apply" are forbidden.
 - No date, no address block — just the letter body from "Dear Hiring Manager" to sign-off`;
 
 const ALLOWED_TYPES = new Set(['resume', 'cover']);
@@ -68,7 +68,6 @@ async function validateStripeSession(sessionId) {
   if (!sessionId || typeof sessionId !== 'string') return false;
   if (!sessionId.startsWith('cs_')) return false;
   if (sessionId.length > 200) return false;
-
   try {
     const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
       headers: { 'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}` }
@@ -82,7 +81,9 @@ async function validateStripeSession(sessionId) {
 }
 
 module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigins = ['https://resumeready-five.vercel.app', 'https://myresumeready.ca'];
+  const origin = req.headers.origin;
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigins.includes(origin) ? origin : allowedOrigins[0]);
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -91,28 +92,15 @@ module.exports = async function handler(req, res) {
 
   const { prompt, type, session } = req.body;
 
-  // --- PAYMENT GATE ---
   const paid = await validateStripeSession(session);
-  if (!paid) {
-    return res.status(403).json({ error: 'Purchase required.', paywall: true });
-  }
+  if (!paid) return res.status(403).json({ error: 'Purchase required.', paywall: true });
 
-  // --- INPUT VALIDATION ---
-  if (!prompt || typeof prompt !== 'string') {
-    return res.status(400).json({ error: 'No prompt provided' });
-  }
-  if (prompt.trim().length === 0) {
-    return res.status(400).json({ error: 'Prompt cannot be empty' });
-  }
-  if (prompt.length > MAX_PROMPT_LENGTH) {
-    return res.status(400).json({ error: 'Input too long. Please shorten your responses.' });
-  }
-  if (type && !ALLOWED_TYPES.has(type)) {
-    return res.status(400).json({ error: 'Invalid type' });
-  }
+  if (!prompt || typeof prompt !== 'string') return res.status(400).json({ error: 'No prompt provided' });
+  if (prompt.trim().length === 0) return res.status(400).json({ error: 'Prompt cannot be empty' });
+  if (prompt.length > MAX_PROMPT_LENGTH) return res.status(400).json({ error: 'Input too long. Please shorten your responses.' });
+  if (type && !ALLOWED_TYPES.has(type)) return res.status(400).json({ error: 'Invalid type' });
 
   const systemPrompt = type === 'cover' ? COVER_SYSTEM_PROMPT : RESUME_SYSTEM_PROMPT;
-
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
@@ -126,7 +114,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 1000,
+        max_tokens: 1500,
         temperature: 0,
         system: [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }],
         messages: [{ role: 'user', content: prompt }]
@@ -153,9 +141,7 @@ module.exports = async function handler(req, res) {
 
   } catch (error) {
     clearTimeout(timeout);
-    if (error.name === 'AbortError') {
-      return res.status(504).json({ error: 'Request timed out. Please try again.' });
-    }
+    if (error.name === 'AbortError') return res.status(504).json({ error: 'Request timed out. Please try again.' });
     return res.status(500).json({ error: 'Connection failed. Please check your internet and try again.' });
   }
 };
