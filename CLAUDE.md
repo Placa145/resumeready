@@ -1,7 +1,7 @@
 # ResumeReady — Claude Code Context
 
 ## What this is
-AI resume builder for Grade 9–12 students applying to their first job (Tim Hortons, Walmart, McDonald's, etc). Live at resumeready-five.vercel.app (myresumeready.ca pending). Built to make money — simple product, real Stripe payments.
+AI resume builder for Grade 9–12 students applying to their first job (Tim Hortons, Walmart, McDonald's, etc ). Live at resumeready-five.vercel.app (myresumeready.ca pending). Built to make money — simple product, real Stripe payments.
 
 ## Repo structure
 ```
