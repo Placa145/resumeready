@@ -1,4 +1,4 @@
-// v20
+// v21 — adds KV-backed rate limiting, session caching, refund check, generation cap
 const RESUME_SYSTEM_PROMPT = `You are a resume writer for teenagers applying to their first job. Your output must be a single valid JSON object — no markdown, no backticks, no commentary, nothing before or after the JSON.
 
 CORE IDENTITY: You write resumes that sound like a real student wrote them. Not a consultant. Not LinkedIn. A teenager. Believable beats impressive every time. The failure mode is a resume that sounds like a chatbot wrote it — every output must pass this test: could a real 16-year-old have written this?
@@ -64,24 +64,70 @@ RULES:
 const ALLOWED_TYPES = new Set(['resume', 'cover']);
 const MAX_PROMPT_LENGTH = 4000;
 const REQUEST_TIMEOUT_MS = 8000;
+const MAX_GENERATIONS_PER_SESSION = 8;
+const BURST_WINDOW_SECONDS = 5;
 
-async function validateStripeSession(sessionId) {
-  if (!sessionId || typeof sessionId !== 'string') return false;
-  if (!sessionId.startsWith('cs_')) return false;
-  if (sessionId.length > 200) return false;
+// --- KV (Upstash REST) helper ---
+const KV_URL = process.env.KV_REST_API_URL;
+const KV_TOKEN = process.env.KV_REST_API_TOKEN;
 
+async function kv(cmd) {
+  if (!KV_URL || !KV_TOKEN) return null;
+  try {
+    const r = await fetch(KV_URL, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${KV_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(cmd)
+    });
+    if (!r.ok) return null;
+    const data = await r.json();
+    return data.result;
+  } catch (_) { return null; }
+}
+
+// --- Rate limiting ---
+async function passesBurstLimit(sessionId) {
+  // SET key 1 NX EX 5 → "OK" if set succeeded (allowed), null if already exists (blocked)
+  const r = await kv(['SET', `rlb:${sessionId}`, '1', 'NX', 'EX', BURST_WINDOW_SECONDS]);
+  return r === 'OK' || r === null && !KV_URL; // If KV is down, fail open (don't block paying customers)
+}
+
+async function passesGenerationCap(sessionId) {
+  const count = await kv(['INCR', `gens:${sessionId}`]);
+  if (count === null) return true; // KV down, fail open
+  if (count === 1) await kv(['EXPIRE', `gens:${sessionId}`, 60 * 60 * 24 * 7]); // 1 week
+  return count <= MAX_GENERATIONS_PER_SESSION;
+}
+
+// --- Session validation: KV first (webhook-populated), Stripe API fallback ---
+async function getSessionStatus(sessionId) {
+  const cached = await kv(['GET', `sess:${sessionId}`]);
+  if (cached) {
+    try { return JSON.parse(cached); } catch (_) {}
+  }
+  // Fallback: query Stripe directly (covers: webhook delay, BETA coupon sessions never sent webhook, KV down)
   try {
     const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}`, {
       headers: { 'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}` }
     });
-    if (!res.ok) return false;
+    if (!res.ok) return { paid: false, refunded: false };
     const session = await res.json();
-    // 'paid' = real payment succeeded
-    // 'no_payment_required' = 100% coupon (BETA) — still valid access
-    return session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
+    const paid = session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
+    const status = { paid, refunded: false, amount: session.amount_total || 0 };
+    if (paid) await kv(['SET', `sess:${sessionId}`, JSON.stringify(status), 'EX', 60 * 60 * 24]);
+    return status;
   } catch (_) {
-    return false;
+    return { paid: false, refunded: false };
   }
+}
+
+async function validateSession(sessionId) {
+  if (!sessionId || typeof sessionId !== 'string') return { valid: false, reason: 'paywall' };
+  if (!sessionId.startsWith('cs_') || sessionId.length > 200) return { valid: false, reason: 'paywall' };
+  const status = await getSessionStatus(sessionId);
+  if (!status.paid) return { valid: false, reason: 'paywall' };
+  if (status.refunded) return { valid: false, reason: 'refunded' };
+  return { valid: true };
 }
 
 module.exports = async function handler(req, res) {
@@ -96,9 +142,24 @@ module.exports = async function handler(req, res) {
 
   const { prompt, type, session } = req.body;
 
-  const paid = await validateStripeSession(session);
-  if (!paid) return res.status(403).json({ error: 'Purchase required.', paywall: true });
+  // 1. Session must be paid AND not refunded
+  const v = await validateSession(session);
+  if (!v.valid) {
+    if (v.reason === 'refunded') return res.status(403).json({ error: 'This session was refunded. Contact hello@myresumeready.ca if this is a mistake.', paywall: true });
+    return res.status(403).json({ error: 'Purchase required.', paywall: true });
+  }
 
+  // 2. Burst control (1 req per 5s per session)
+  if (!(await passesBurstLimit(session))) {
+    return res.status(429).json({ error: 'Slow down — wait a few seconds before trying again.' });
+  }
+
+  // 3. Generation cap per session (8 total)
+  if (!(await passesGenerationCap(session))) {
+    return res.status(429).json({ error: 'You have used the maximum number of generations for this purchase. Email hello@myresumeready.ca if you need more.' });
+  }
+
+  // 4. Input validation
   if (!prompt || typeof prompt !== 'string') return res.status(400).json({ error: 'No prompt provided' });
   if (prompt.trim().length === 0) return res.status(400).json({ error: 'Prompt cannot be empty' });
   if (prompt.length > MAX_PROMPT_LENGTH) return res.status(400).json({ error: 'Input too long. Please shorten your responses.' });
@@ -135,7 +196,7 @@ module.exports = async function handler(req, res) {
         const errJson = JSON.parse(errText);
         if (errJson?.error?.type === 'overloaded_error') errMsg = 'The AI is busy right now. Please try again in a moment.';
         if (errJson?.error?.type === 'rate_limit_error') errMsg = 'Too many requests. Please wait a moment and try again.';
-        if (errJson?.error?.type === 'invalid_api_key') errMsg = 'Configuration error. Please contact support.';
+        if (errJson?.error?.type === 'invalid_api_key') errMsg = 'Service unavailable. Please contact support.';
       } catch (_) {}
       return res.status(response.status).json({ error: errMsg });
     }
