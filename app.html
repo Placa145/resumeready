@@ -11,7 +11,9 @@
 <style>
 :root{--black:#0A0A0A;--white:#FAFAF8;--green:#16A34A;--gl:#DCFCE7;--muted:#52525B;--border:#E5E7EB;--red:#DC2626;--red-bg:#FEF2F2}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased;text-wrap:pretty}
+.step-title{text-wrap:balance}
+@media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
 nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);background:var(--white)}
 .logo{font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;text-decoration:none;color:var(--black);display:flex;align-items:center;gap:7px}
 .logo-dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
@@ -311,6 +313,30 @@ let bilingual = false;
 let resumeData = null;
 let starterCoverText = '';
 
+// --- SAVE/RESTORE FORM DATA (for Pro upgrade flow) ---
+function saveFormData(){
+  const data = {};
+  ['fname','city','email','phone','school','grade','job','avail','why','skills','hobbies','languages'].forEach(id=>{
+    const el=$(id); if(el) data[id]=el.value;
+  });
+  data.bilingual = bilingual;
+  try { sessionStorage.setItem('rr_form', JSON.stringify(data)); } catch(_){}
+}
+function restoreFormData(){
+  try {
+    const raw = sessionStorage.getItem('rr_form');
+    if(!raw) return;
+    const data = JSON.parse(raw);
+    ['fname','city','email','phone','school','grade','job','avail','why','skills','hobbies','languages'].forEach(id=>{
+      const el=$(id); if(el && data[id]) el.value=data[id];
+    });
+    if(data.bilingual && !bilingual) toggleBilingual();
+    sessionStorage.removeItem('rr_form');
+  } catch(_){}
+}
+// Restore on load if coming back from Pro upgrade
+if(SESSION_ID) restoreFormData();
+
 // --- UTILS ---
 function v(id){ return (document.getElementById(id)||{}).value?.trim()||''; }
 function sanitize(str){ return str ? str.replace(/\\/g,'\\\\').replace(/`/g,"'") : ''; }
@@ -487,33 +513,16 @@ async function generate(){
     ? `Why this job (copy verbatim as Sentence 2 of objective): ${sanitize(v('why'))}`
     : `Why this job: [BLANK — write ONE sentence objective only, no second sentence]`;
 
-  const prompt = `Create a first-job resume for a student. Return ONLY valid JSON — no markdown, no backticks, no commentary.
+  const prompt = `Create a first-job resume. Return ONLY valid JSON.
 
-STUDENT INFO:
-Name: ${sanitize(v('fname'))} | City: ${sanitize(v('city'))} | Email: ${sanitize(v('email'))||''} | Phone: ${sanitize(v('phone'))||''}
+Name: ${sanitize(v('fname'))} | City: ${sanitize(v('city'))} | Email: ${sanitize(v('email'))||'[omit]'} | Phone: ${sanitize(v('phone'))||'[omit]'}
 School: ${sanitize(v('school'))}, ${v('grade')} | Job: ${sanitize(v('job'))} | Availability: ${sanitize(v('avail'))}
 ${whyLine}
-SKILLS INPUT (skills section only — do not use this to create activities): ${sanitize(v('skills'))}
-ACTIVITIES INPUT (clubs, sports, hobbies — do not use this to create skills): ${sanitize(v('hobbies'))||'none'}
+SKILLS INPUT: ${sanitize(v('skills'))}
+ACTIVITIES INPUT: ${sanitize(v('hobbies'))||'none'}
 ${langNote}
 
-STRICT RULES — every violation is a critical failure:
-
-RULE 1 — PHONE: Include phone ONLY if provided above. If blank, omit it from contact entirely. NEVER invent a phone number.
-RULE 2 — VERBATIM SKILLS: Each skill bullet must use ONLY the student's exact words. Do NOT add, expand, or elaborate. Adding even one word not in the student's input is a critical violation.
-RULE 2B — COMPOUND SENTENCE = ONE BULLET: Convert "I help/I am" to "Helps/Is" only. The connector "so" must always become "and". Every verb clause must have a subject. Never split one sentence into two bullets.
-RULE 3 — VERBATIM AVAILABILITY: Copy with only capitalization changes. "Saturday and Sunday" must remain "Saturday and Sunday" — NEVER "weekends".
-RULE 4 — PRESERVE PERSONAL REFERENCES: "mom's small business" stays "mom's small business". Always preserve possessive pronouns — never drop "my".
-RULE 5 — PRESERVE SPECIFICS: "every Friday" stays "every Friday". Preserve parenthetical formatting exactly.
-RULE 6 — ZERO DUPLICATION: Each item appears in exactly ONE section.
-RULE 7 — NO INVENTION: No skills or claims the student did not provide.
-RULE 8 — NO ACADEMIC INVENTION: No GPA, honour roll, awards, or any academic claim the student did not mention.
-RULE 9 — OBJECTIVE: If "why" is provided, write exactly two sentences: "Seeking a [job title] position at [company]." then the student's exact why verbatim. If why is BLANK, write ONE sentence only.
-RULE 10 — NO CROSS-CONTAMINATION: Skills from SKILLS INPUT only. Activities from ACTIVITIES INPUT only.
-RULE 11 — SPELLING: Canadian city → Canadian spelling. US city → American spelling.
-
-Return this exact JSON structure:
-{"name":"string","contact":"City | email | phone (omit phone if not provided)","availability":"string","objective":"string","skills":["array"],"education":{"school":"string","grade":"Grade X","highlights":[]},"languages":["array or []"],"activities":["array"]}`;
+JSON: {"name":"","contact":"","availability":"","objective":"","skills":[],"education":{"school":"","grade":"","highlights":[]},"languages":[],"activities":[]}`;
 
   let success = false;
   let lastError = 'Something went wrong. Please try again.';
@@ -593,7 +602,7 @@ async function generateStarterPreview(){
       <div class="upgrade-note">
         <h4>Your cover letter is written — unlock it for $19</h4>
         <p>Already done. Written from the same answers you just gave. Most applicants won't send one — you win by default just by unlocking it.</p>
-        <a href="https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02" rel="noopener">Unlock cover letter — $19 →</a>
+        <a href="https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02" rel="noopener" onclick="saveFormData()">Unlock cover letter — $19 →</a>
         <p class="guarantee">Not happy? Email hello@myresumeready.ca — full refund, no questions.</p>
       </div>`;
 
@@ -611,7 +620,7 @@ async function generateStarterPreview(){
       <div class="upgrade-note">
         <h4>Get the cover letter — $19</h4>
         <p>Written from your exact answers. Zero extra effort. Most applicants skip it — you won't.</p>
-        <a href="https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02" rel="noopener">Get cover letter — $19 →</a>
+        <a href="https://buy.stripe.com/eVq3cv9SQ0QO4Nr4iG9Ve02" rel="noopener" onclick="saveFormData()">Get cover letter — $19 →</a>
         <p class="guarantee">Not happy? Email hello@myresumeready.ca — full refund, no questions.</p>
       </div>`;
   }

@@ -53,10 +53,11 @@ Anti-vibe: dark-mode SaaS, neon gradients, glassmorphism, dense dashboards.
 | Headings / buttons / big numbers | Bricolage Grotesque | 400, 700, 800 |
 | Body / UI / inputs | Plus Jakarta Sans | 400, 500 |
 
-- Hero h1: clamp(32px, 4vw, 50px), 800, letter-spacing -0.03em
-- Section titles: clamp(24px, 3.2vw, 36px), 800, -0.025em
-- Body: 13-15.5px, line-height 1.6-1.75
+- Hero h1: clamp(32px, 4vw, 50px), 800, letter-spacing -0.03em, text-wrap: balance
+- Section titles: clamp(24px, 3.2vw, 36px), 800, -0.025em, text-wrap: balance
+- Body: 13-15.5px, line-height 1.6-1.75, text-wrap: pretty
 - Eyebrows: uppercase, 700, letter-spacing .06-.12em, --green
+- All motion must include `prefers-reduced-motion: reduce` fallback
 
 ---
 
