@@ -27,7 +27,7 @@ Anti-vibe: dark-mode SaaS, neon gradients, glassmorphism, dense dashboards.
   --green: #16A34A;      /* brand / CTA / success */
   --gl: #DCFCE7;         /* green-light fills */
   --gm: #86EFAC;         /* green-medium accents */
-  --muted: #6B7280;      /* secondary text */
+  --muted: #52525B;      /* secondary text — darkened from #6B7280 for WCAG 4.5:1 on warm bg */
   --border: #E5E7EB;     /* hairlines, dividers */
   --red: #DC2626;        /* errors only */
   --red-bg: #FEF2F2;     /* error field bg */

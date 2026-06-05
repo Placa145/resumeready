@@ -24,13 +24,14 @@
 <style>
 :root{
   --black:#0A0A0A;--white:#FAFAF8;--green:#16A34A;--gl:#DCFCE7;--gm:#86EFAC;
-  --muted:#6B7280;--border:#E5E7EB;--red:#DC2626;
+  --muted:#52525B;--border:#E5E7EB;--red:#DC2626;
   --shadow:0 4px 16px rgba(0,0,0,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--white);color:var(--black);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;text-wrap:balance}
+@media(prefers-reduced-motion:reduce){*{animation-duration:0.01ms!important;transition-duration:0.01ms!important}}
 #full-samples,#how-it-works,#pricing,#faq,#parents{scroll-margin-top:72px}
 
 /* NAV */
