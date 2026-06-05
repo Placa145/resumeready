@@ -1,4 +1,3 @@
-[CLAUDE.md](https://github.com/user-attachments/files/28324396/CLAUDE.md)
 # ResumeReady — Claude Code Context
 
 ## What this is
